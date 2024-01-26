@@ -1,0 +1,36 @@
+version: "3"
+services:
+  api:
+    build: .
+    command: "nodemon src/main.js"
+    ports:
+      - "8084:8084"
+    environment:
+      - ENV=dev
+      - JWT_SECRET=1234567890ABCDEFG
+    restart: always
+    volumes:
+      - .:/app
+    networks:
+      node_network:
+        ipv4_address: 192.164.92.2  # Fixed IP for the API service
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: sigma
+      POSTGRES_PASSWORD: sigma
+      POSTGRES_DB: sigma
+    ports:
+      - "5432:5432"
+    networks:
+      node_network:
+        ipv4_address: 192.164.92.3  # Fixed IP for the PostgreSQL service
+    restart: always
+networks:
+  node_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.164.92.0/24"
